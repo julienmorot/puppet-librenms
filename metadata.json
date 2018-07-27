@@ -1,0 +1,18 @@
+{
+  "name": "jmorot-librenms",
+  "version": "0.1.0",
+  "author": "jmorot",
+  "summary": "Simple module to deploy LibreNMS Monitoring solution",
+  "license": "GPLv3",
+  "source": "https://gitlab.com/julienmorot/puppet-librenms",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 1.0.0"
+    }
+  ],
+  "data_provider": null
+}
+
