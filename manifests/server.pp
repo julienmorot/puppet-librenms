@@ -32,4 +32,14 @@ class librenms::server {
         groups     => 'www-data',
     }
 
+    vcsrepo { '/opt/librenms':
+        ensure   => present,
+   		provider => git,
+    	source   => 'https://github.com/librenms/librenms.git',
+   	 	revision => '1.41',
+		owner    => 'librenms',
+		group    => 'librenms',
+		force    => true,
+  	}
+
 }
