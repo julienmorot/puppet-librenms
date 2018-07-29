@@ -17,6 +17,8 @@ class librenms::server {
         override_options        => $override_options
     }
 
+	class { 'mysql::bindings::php': }
+
     mysql::db { $::librenms::vars::dbname:
         user     => $::librenms::vars::dbuser,
         password => $::librenms::vars::dbpassword,
@@ -42,4 +44,34 @@ class librenms::server {
 		force    => true,
   	}
 
+ 	class { 'apache':
+    	default_vhost => false,
+    	mpm_module => prefork,
+  	}
+
+    class { 'apache::mod::php': }
+
+    apache::vhost { $::librenms::vars::vhost:
+    	port    => '80',
+    	docroot => '/opt/librenms',
+  	}
+
+ 	file { '/etc/cron.d/librenms':
+    	ensure => 'link',
+    	target => '/opt/librenms/librenms.nonroot.cron',
+  	}
+
+    file { '/etc/logrotate.d/librenms':
+        ensure => 'link',
+        target => '/opt/librenms/misc/librenms.logrotate',
+    }
+
+	file {'/opt/librenms':
+		owner => 'librenms',
+		group => 'librenms',
+		recurse => true,
+	}
+
+
 }
+

@@ -4,6 +4,7 @@ class librenms::vars {
   $dbuser = 'librenms'
   $dbpassword = 'librenms'
   $dbhost = 'localhost'
+  $vhost = 'librenms.int.morot.fr'
   $snmpcommunity = 'public'
 }
 
