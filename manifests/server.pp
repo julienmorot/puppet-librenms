@@ -1,7 +1,7 @@
 class librenms::server {
     include '::librenms::vars'
 
-    $pkgdep = ['acl','composer','fping','git','graphviz','imagemagick','mtr-tiny','nmap','python-memcache','python-mysqldb','rrdtool','snmp','snmpd','whois']
+    $pkgdep = ['acl','composer','fping','git','graphviz','imagemagick','mtr-tiny','nmap','python-memcache','python-mysqldb','rrdtool','snmp','whois']
     package { $pkgdep: ensure => present }
 
     $override_options = {
@@ -49,7 +49,11 @@ class librenms::server {
     	mpm_module => prefork,
   	}
 
-    class { 'apache::mod::php': }
+    class { 'apache::mod::php':
+		#if $facts['os']['distro']['release']['full'] == 18.04 {
+			php_version => "7.2"
+		#}
+	}
 
     apache::vhost { $::librenms::vars::vhost:
     	port    => '80',
