@@ -17,8 +17,6 @@ class librenms::server {
         override_options        => $override_options
     }
 
-	class { 'mysql::bindings::php': }
-
     mysql::db { $::librenms::vars::dbname:
         user     => $::librenms::vars::dbuser,
         password => $::librenms::vars::dbpassword,
@@ -44,20 +42,25 @@ class librenms::server {
 		force    => true,
   	}
 
+	# Bug https://bugs.launchpad.net/ubuntu/+source/apache2/+bug/1782806
+    if $facts['os']['distro']['release']['full'] == 18.04 {
+		package { 'libapache2-mod-php': ensure => present, }
+	}
+
  	class { 'apache':
     	default_vhost => false,
     	mpm_module => prefork,
   	}
 
-    class { 'apache::mod::php':
-		#if $facts['os']['distro']['release']['full'] == 18.04 {
-			php_version => "7.2"
-		#}
+	if $facts['os']['distro']['release']['full'] != '18.04' {
+		class { 'apache::mod::php': }
 	}
+
+	class { 'mysql::bindings::php': }
 
     apache::vhost { $::librenms::vars::vhost:
     	port    => '80',
-    	docroot => '/opt/librenms',
+    	docroot => '/opt/librenms/html',
   	}
 
  	file { '/etc/cron.d/librenms':
