@@ -1,0 +1,19 @@
+<VirtualHost *:80>
+  ServerName <%= scope.lookupvar("librenms::vars::vhostname") %>
+
+  ## Vhost docroot
+  DocumentRoot "<%= scope.lookupvar("librenms::vars::vhostdocumentroot") %>"
+
+  ## Directories, there should at least be a declaration for /opt/librenms/html
+
+  <Directory "<%= scope.lookupvar("librenms::vars::vhostdocumentroot") %>">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Require all granted
+  </Directory>
+
+  ## Logging
+  ErrorLog "/var/log/apache2/<%= scope.lookupvar("librenms::vars::vhostname") %>_error.log"
+  ServerSignature Off
+  CustomLog "/var/log/apache2/<%= scope.lookupvar("librenms::vars::vhostname") %>_access.log" combined
+</VirtualHost>

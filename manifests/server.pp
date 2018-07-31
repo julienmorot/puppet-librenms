@@ -42,26 +42,49 @@ class librenms::server {
 		force    => true,
   	}
 
-	# Bug https://bugs.launchpad.net/ubuntu/+source/apache2/+bug/1782806
     if $facts['os']['distro']['release']['full'] == 18.04 {
-		package { 'libapache2-mod-php': ensure => present, }
+		$phpver = "7.2"
+	}
+	if $facts['os']['distro']['release']['full'] == 16.04 {
+        $phpver = "7.0"
+    }
+
+	package { 'libapache2-mod-php': ensure => present, }
+	exec { "a2enmod php${phpver}":
+		path => ["/bin", "/sbin", "/usr/bin", "/usr/sbin" ],
 	}
 
- 	class { 'apache':
-    	default_vhost => false,
-    	mpm_module => prefork,
-  	}
-
-	if $facts['os']['distro']['release']['full'] != '18.04' {
-		class { 'apache::mod::php': }
+	service { "apache2" :
+    	ensure    => running,
+	    enable    => true,
+	    hasrestart => true,
+	    hasstatus  => true,
 	}
 
-	class { 'mysql::bindings::php': }
+	file { '/etc/apache2/sites-available/vhost.librenms.conf':
+	    ensure  => file,
+	    mode    => '644',
+	    owner   => 'root',
+	    group   => 'root',
+    	content => template("${module_name}/vhost.librenms.conf.erb"),
+	}
 
-    apache::vhost { $::librenms::vars::vhost:
-    	port    => '80',
-    	docroot => '/opt/librenms/html',
-  	}
+    file { '/etc/apache2/sites-enabled/vhost.librenms.conf':
+        ensure => 'link',
+        target => '/etc/apache2/sites-available/vhost.librenms.conf',
+		notify  => Service["apache2"],
+    }
+
+	$librenmspkgdep = ['php${phpver}-curl','php${phpver}-gd','php${phpver}-xml','php${phpver}-mbstring', 'php${phpver}-mysql']
+    package { $librenmspkgdep: ensure => present }
+
+    exec { 'composer_librenms':
+        command  => "./scripts/composer_wrapper.php install --no-dev && touch /opt/librenms/.composer_librenms",
+		cwd		 => "/opt/librenms",
+        path     => '/usr/bin:/usr/sbin:/bin:/sbin',
+        provider => shell,
+        unless   => ['test -f /opt/librenms/.composer_librenms'],
+    }
 
  	file { '/etc/cron.d/librenms':
     	ensure => 'link',

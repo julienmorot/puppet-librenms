@@ -19,10 +19,6 @@
     {
       "name": "puppetlabs-mysql",
       "version_requirement": ">= 5.1.0"
-    },
-    {
-      "name": "puppetlabs-apache",
-      "version_requirement": ">= 2.3.0"
     }
   ],
   "data_provider": null
