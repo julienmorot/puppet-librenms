@@ -4,11 +4,10 @@
   ## Vhost docroot
   DocumentRoot "<%= scope.lookupvar("librenms::vars::vhostdocumentroot") %>"
 
-  ## Directories, there should at least be a declaration for /opt/librenms/html
-
+  AllowEncodedSlashes NoDecode
   <Directory "<%= scope.lookupvar("librenms::vars::vhostdocumentroot") %>">
     Options Indexes FollowSymLinks MultiViews
-    AllowOverride None
+    AllowOverride All
     Require all granted
   </Directory>
 

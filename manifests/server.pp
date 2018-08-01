@@ -6,9 +6,9 @@ class librenms::server {
     package { $pkgdep: ensure => present }
 
     $override_options = {
-        '[mysqld]' => {
+        'mysqld' => {
             innodb_file_per_table=>1,
-            sql-mode=>"",
+            sql-mode=>"''",
             lower_case_table_names=>0,
         }
     }
@@ -23,6 +23,7 @@ class librenms::server {
         password => $::librenms::vars::dbpassword,
         host     => $::librenms::vars::dbhost,
         grant    => ['ALL'],
+		collate	 => 'utf8_unicode_ci',
     }
 
     user { 'librenms':
@@ -39,7 +40,7 @@ class librenms::server {
     	source   => 'https://github.com/librenms/librenms.git',
    	 	revision => '1.41',
 		owner    => 'librenms',
-		group    => 'librenms',
+		group    => 'www-data',
 		force    => true,
   	}
 
@@ -55,6 +56,18 @@ class librenms::server {
 		path => ["/bin", "/sbin", "/usr/bin", "/usr/sbin" ],
 		unless   => ["test -f /etc/apache2/mods-enabled/php${$phpver}.load"],
 		notify  => Service["apache2"],
+	}
+    exec { "a2enmod rewrite":
+        path => ["/bin", "/sbin", "/usr/bin", "/usr/sbin" ],
+        unless   => ["test -f /etc/apache2/mods-enabled/rewrite.load"],
+        notify  => Service["apache2"],
+    }
+
+	file_line { 'php_timezone':
+  		ensure => present,
+  		path   => "/etc/php/${$phpver}/apache2/php.ini",
+  		line   => "date.timezone=${::librenms::vars::phptimezone}",
+  		match  => '^date.timezone',
 	}
 
 	Service { "apache2" :

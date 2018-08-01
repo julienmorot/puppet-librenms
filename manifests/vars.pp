@@ -9,7 +9,8 @@ class librenms::vars {
     $snmpcommunity = 'public'
     $snmpcontact = 'sysadmin@domain.tld'
     $snmplocation = 'Best datacenter on earth'
-	$vhostdocumentroot = '/opt/librenms/html'
+    $vhostdocumentroot = '/opt/librenms/html'
+    $phptimezone = 'Europe/Paris'
 
 }
 
