@@ -1,5 +1,6 @@
 class librenms::server {
     include '::librenms::vars'
+	$phpver = "7.2"
 
     $pkgdep = ['acl','composer','fping','git','graphviz','imagemagick','mtr-tiny','nmap','python-memcache','python-mysqldb','rrdtool','snmp','whois']
     package { $pkgdep: ensure => present }
@@ -50,15 +51,15 @@ class librenms::server {
     }
 
 	package { 'libapache2-mod-php': ensure => present, }
-	exec { "a2enmod php${phpver}":
+	exec { "a2enmod php${$phpver}":
 		path => ["/bin", "/sbin", "/usr/bin", "/usr/sbin" ],
+		unless   => ["test -f /etc/apache2/mods-enabled/php${$phpver}.load"],
+		notify  => Service["apache2"],
 	}
 
-	service { "apache2" :
+	Service { "apache2" :
     	ensure    => running,
 	    enable    => true,
-	    hasrestart => true,
-	    hasstatus  => true,
 	}
 
 	file { '/etc/apache2/sites-available/vhost.librenms.conf':
@@ -75,7 +76,7 @@ class librenms::server {
 		notify  => Service["apache2"],
     }
 
-	$librenmspkgdep = ['php${phpver}-curl','php${phpver}-gd','php${phpver}-xml','php${phpver}-mbstring', 'php${phpver}-mysql']
+	$librenmspkgdep = ["php${phpver}-curl","php${phpver}-gd","php${phpver}-xml","php${phpver}-mbstring", "php${phpver}-mysql"]
     package { $librenmspkgdep: ensure => present }
 
     exec { 'composer_librenms':
@@ -96,9 +97,14 @@ class librenms::server {
         target => '/opt/librenms/misc/librenms.logrotate',
     }
 
+	file { '/etc/apache2/sites-enabled/000-default.conf':
+		ensure => 'removed',
+		notify  => Service["apache2"],
+	}
+
 	file {'/opt/librenms':
 		owner => 'librenms',
-		group => 'librenms',
+		group => 'www-data',
 		recurse => true,
 	}
 

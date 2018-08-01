@@ -5,7 +5,7 @@ class librenms::vars {
     $dbuser = 'librenms'
     $dbpassword = 'librenms'
     $dbhost = 'localhost'
-    $vhostname = $facts['os']['fqdn']
+    $vhostname = $fqdn
     $snmpcommunity = 'public'
     $snmpcontact = 'sysadmin@domain.tld'
     $snmplocation = 'Best datacenter on earth'
