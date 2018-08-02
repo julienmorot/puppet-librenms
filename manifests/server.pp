@@ -66,8 +66,9 @@ class librenms::server {
 	file_line { 'php_timezone':
   		ensure => present,
   		path   => "/etc/php/${$phpver}/apache2/php.ini",
-  		line   => "date.timezone=${::librenms::vars::phptimezone}",
+  		line   => "date.timezone = ${::librenms::vars::phptimezone}",
   		match  => '^date.timezone',
+		notify  => Service["apache2"],
 	}
 
 	Service { "apache2" :
