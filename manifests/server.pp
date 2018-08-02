@@ -109,8 +109,8 @@ class librenms::server {
     }
 
  	file { '/etc/cron.d/librenms':
-    	ensure => 'link',
-    	target => '/opt/librenms/librenms.nonroot.cron',
+    	ensure => 'file',
+    	source => 'file:///opt/librenms/librenms.nonroot.cron',
   	}
 
     file { '/etc/logrotate.d/librenms':
