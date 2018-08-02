@@ -71,6 +71,13 @@ class librenms::server {
 		notify  => Service["apache2"],
 	}
 
+    file_line { 'phpcli_timezone':
+        ensure => present,
+        path   => "/etc/php/${$phpver}/cli/php.ini",
+        line   => "date.timezone = ${::librenms::vars::phptimezone}",
+        match  => '^date.timezone',
+    }
+
 	Service { "apache2" :
     	ensure    => running,
 	    enable    => true,
