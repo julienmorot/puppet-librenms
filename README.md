@@ -19,16 +19,19 @@ Configure your variables in manifests/vars.pp (I know, not the best way to do th
 
 For a server :
 
+```
 node 'server' {
     include librenms::server
 }
+```
 
 For a monitored system :
 
+```
 node 'agent' {
     include librenms::agent
 }
-
+```
 
 
 
